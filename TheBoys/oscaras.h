@@ -49,6 +49,7 @@ typedef struct
     struct cjto_t *presentes; // Conjunto dos IDs dos heróis presentes na base
     struct lista_t *espera;   // Fila de espera para entrar na base
     posicao local;            // Localização da base (coordenadas X, Y)
+    unsigned int missoes_completas;
 } base;
 
 typedef struct

@@ -137,11 +137,11 @@ int main()
         case MISSAO:
             if (ev != NULL)
             {
-                printf("\n%6d: MISSAO %d TENT %d HAB REQ: [ ", ev->tempo, ev->missao->id, ev->missao->tentativas);
+                printf("\n%6d: MISSAO   %-4d TENT %d HAB REQ: [ ", ev->tempo, ev->missao->id, ev->missao->tentativas);
                 cjto_imprime(ev->missao->habilidades);
                 printf(" ]");
                 missao_ev(ev->tempo, ev->missao, lef, &mundo_atual);
-                printf("\n%6u: MISSAO   %u LOCAL %u,%u",
+                printf("\n%6u: MISSAO   %-4d LOCAL %u,%u",
                        ev->tempo, ev->missao->id,
                        ev->missao->local.x, ev->missao->local.y);
             }
@@ -161,11 +161,10 @@ int main()
         free(ev);
     }
 
-    printf("\nEVENTOS TRATADOS: %d", n_eventos);
-    printf("\nMISSOES CUMPRIDAS: %4d/%4d", mundo_atual.missoes_cumpridas, mundo_atual.num_missoes);
     int tentativas_totais = 0;
     int tentativa_maxima = 0;
     int tentativa_minima = -1;
+
     for (int h = 0; h < (int)mundo_atual.num_missoes; h++)
     {
         missao missao_atual = mundo_atual.missoes[h];
@@ -179,19 +178,24 @@ int main()
             tentativa_minima = missao_atual.tentativas;
         }
     }
-    double taxa_de_mortalidade = (double)mundo_atual.herois_mortos * 100 / (double)mundo_atual.num_herois;
-    printf("\nTENTATIVAS/MISSAO: MIN %d, MAX %d, MEDIA %.1f", tentativa_minima, tentativa_maxima, ((double)tentativas_totais / (double)mundo_atual.num_missoes));
-    printf("\nTAXA DE MORTALIDADE: %.1f\%%", taxa_de_mortalidade);
     for (unsigned j = 0; j < mundo_atual.num_herois; j++)
     {
-        printf("\nHEROI %2d: %b", mundo_atual.herois[j].id, mundo_atual.herois[j].vivo);
+        printf("\nHEROI %2d: %b HABILIDADES: [", mundo_atual.herois[j].id, mundo_atual.herois[j].vivo);
+        cjto_imprime(mundo_atual.herois[j].habilidades);
+        printf(" ]");
     }
     for (unsigned j = 0; j < mundo_atual.num_bases; j++)
     {
-        printf("\nBASE %2d: (%2d/%2d) [", mundo_atual.bases[j].id, mundo_atual.bases[j].presentes->num, mundo_atual.bases[j].presentes->cap);
+        printf("\nBASE %2d: MISSOES CUMPRIDAS: %4d (%2d/%2d) [", mundo_atual.bases[j].id, mundo_atual.bases[j].missoes_completas, mundo_atual.bases[j].presentes->num, mundo_atual.bases[j].presentes->cap);
         cjto_imprime(mundo_atual.bases[j].presentes);
         printf(" ]");
     }
+
+    printf("\nEVENTOS TRATADOS: %d", n_eventos);
+    printf("\nMISSOES CUMPRIDAS: %4d/%4d %.2f\%%", mundo_atual.missoes_cumpridas, mundo_atual.num_missoes, (double)mundo_atual.missoes_cumpridas / (double)mundo_atual.num_missoes * 100);
+    double taxa_de_mortalidade = (double)mundo_atual.herois_mortos * 100 / (double)mundo_atual.num_herois;
+    printf("\nTENTATIVAS/MISSAO: MIN %d, MAX %d, MEDIA %.1f", tentativa_minima, tentativa_maxima, ((double)tentativas_totais / (double)mundo_atual.num_missoes));
+    printf("\nTAXA DE MORTALIDADE: %.1f\%%", taxa_de_mortalidade);
 
     // Limpa a LEF e libera memória
     for (unsigned int i = 0; i < mundo_atual.num_herois; i++)

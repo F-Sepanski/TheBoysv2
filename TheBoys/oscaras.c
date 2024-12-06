@@ -70,7 +70,8 @@ void inicializa_herois(mundo *mundo_atual)
     heroi_atual->paciencia = (unsigned int)random_int(0, 100);
     heroi_atual->velocidade = (unsigned int)random_int(50, 5000);
     heroi_atual->vivo = true;
-    heroi_atual->habilidades = cjto_aleat(3, mundo_atual->num_habilidades);
+    int num_habilidades_heroi = random_int(1, 3);
+    heroi_atual->habilidades = cjto_aleat(num_habilidades_heroi, mundo_atual->num_habilidades);
   }
 }
 
@@ -80,6 +81,7 @@ void inicializa_bases(mundo *mundo_atual)
   {
     base *base_atual = &mundo_atual->bases[i];
     base_atual->id = i;
+    base_atual->missoes_completas = 0;
     base_atual->local.x = (unsigned int)random_int(0, mundo_atual->tamanho.x);
     base_atual->local.y = (unsigned int)random_int(0, mundo_atual->tamanho.y);
     base_atual->lotacao = (unsigned int)random_int(3, 10);
@@ -106,8 +108,8 @@ void inicializa_missoes(mundo *mundo_atual)
     missao_atual->id = i;
     missao_atual->local.x = (unsigned int)random_int(0, mundo_atual->tamanho.x);
     missao_atual->local.y = (unsigned int)random_int(0, mundo_atual->tamanho.y);
-    int n_habilidades = random_int(6, 10);
-    missao_atual->habilidades = cjto_aleat(n_habilidades, N_HABILIDADES);
+    int n_habilidades_missao = random_int(6, 10);
+    missao_atual->habilidades = cjto_aleat(n_habilidades_missao, mundo_atual->num_habilidades);
     missao_atual->perigo = (unsigned int)random_int(0, 100);
     missao_atual->cumprida = false;
     missao_atual->tentativas = 0;
@@ -346,7 +348,8 @@ void missao_ev(unsigned int tempo, missao *missao_atual, struct fprio_t *lef, mu
   {
     mundo_atual->missoes_cumpridas++;
     missao_atual->cumprida = true;
-    printf("\n%6d: MISSAO %d CUMPRIDA BASE %d HABS: [ ",
+    base_mais_proxima->missoes_completas++;
+    printf("\n%6d: MISSAO   %-4d CUMPRIDA BASE %2d HABS: [ ",
            tempo, missao_atual->id, base_mais_proxima->id);
     cjto_imprime(habilidades_bmp);
     printf(" ]");
@@ -374,7 +377,7 @@ void missao_ev(unsigned int tempo, missao *missao_atual, struct fprio_t *lef, mu
   else
   {
     missao_atual->tentativas++;
-    printf("\n%6d: MISSAO %d IMPOSSIVEL", tempo, missao_atual->id);
+    printf("\n%6d: MISSAO   %-4d IMPOSSIVEL", tempo, missao_atual->id);
     cria_evento(lef, tempo + 1440, MISSAO, NULL, NULL, missao_atual);
   }
 }
